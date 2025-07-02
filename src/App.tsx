@@ -1,5 +1,7 @@
 import React from 'react';
 import './styles/globals.css';
+import '@fortawesome/fontawesome-free/css/all.min.css';
+
 
 function App() {
   return (
