@@ -1,0 +1,269 @@
+@import '@fortawesome/fontawesome-free/css/all.min.css';
+@import 'mapbox-gl/dist/mapbox-gl.css';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ===========================
+   PERFORMANCE CRITICAL STYLES
+   =========================== */
+
+/* GPU Acceleration Base */
+@layer utilities {
+  .gpu-accelerated {
+    @apply will-change-transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+
+  .contain-layout {
+    contain: layout style paint;
+  }
+
+  .contain-style {
+    contain: layout style;
+  }
+}
+
+/* ===========================
+   BASE STYLES
+   =========================== */
+
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ===========================
+   CUSTOM SCROLLBAR
+   =========================== */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* ===========================
+   UTILITY CLASSES
+   =========================== */
+
+@layer utilities {
+  .gradient-text {
+    background: linear-gradient(to right, #F5484D, #9747FF, #B9FF66);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hover-scale {
+    @apply transition-transform duration-200;
+  }
+
+  .hover-scale:hover {
+    @apply scale-105;
+  }
+
+  .glass {
+    background: rgba(38, 38, 38, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* ===========================
+   TOGGLE & UI COMPONENTS
+   =========================== */
+
+.toggle-button {
+  @apply relative inline-flex items-center justify-center gap-0 
+         rounded-full font-semibold transition-all duration-300 
+         cursor-pointer whitespace-nowrap overflow-hidden
+         text-white/60 bg-transparent w-10 h-10 p-0 text-base;
+  min-height: 40px;
+}
+
+.toggle-button:hover:not(.active) {
+  @apply text-white/80 bg-white/10;
+}
+
+.toggle-button.active {
+  @apply text-white w-auto px-4 gap-2 text-sm;
+}
+
+.toggle-button .button-text {
+  @apply hidden;
+}
+
+.toggle-button.active .button-text {
+  @apply inline;
+}
+
+.toggle-button i,
+.toggle-button .board-icon {
+  @apply flex-shrink-0 transition-transform duration-300;
+}
+
+.toggle-button.active i,
+.toggle-button.active .board-icon {
+  @apply scale-110;
+}
+
+/* ===========================
+   MAPBOX STYLES
+   =========================== */
+
+.mapboxgl-popup-content {
+  @apply bg-neutral-800/95 text-white border border-white/20 rounded-xl p-3;
+}
+
+.mapboxgl-popup-tip {
+  border-top-color: rgba(38, 38, 38, 0.95) !important;
+}
+
+.mapboxgl-popup-close-button {
+  @apply text-white text-base;
+}
+
+.mapboxgl-popup-close-button:hover {
+  @apply bg-white/10;
+}
+
+/* Map movement optimizations */
+.mapboxgl-moving .marker-container:not(.premium-marker),
+.mapboxgl-moving .cluster-marker,
+.mapboxgl-moving .participant-marker,
+.mapboxgl-moving .network-layer {
+  transition: none !important;
+}
+
+.mapboxgl-moving .premium-marker {
+  transition: opacity 0.3s ease !important;
+}
+
+/* ===========================
+   MARKER STYLES
+   =========================== */
+
+.marker-container {
+  @apply w-10 h-10 flex items-center justify-center cursor-pointer gpu-accelerated;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.marker-container.initializing {
+  transition: none !important;
+  opacity: 0;
+}
+
+.marker-container.virtual-marker.initializing {
+  opacity: 1;
+}
+
+.marker-container.positioned {
+  opacity: 1;
+  transition: opacity 0.2s ease;
+}
+
+.marker-content {
+  @apply w-full h-full flex items-center justify-center rounded-full text-xl text-white relative transition-transform duration-300;
+}
+
+.marker-content:hover {
+  @apply scale-125;
+}
+
+/* Virtual Marker */
+.virtual-marker-pulse {
+  @apply absolute -inset-1.5 rounded-full pointer-events-none;
+}
+
+.virtual-marker-pulse::before,
+.virtual-marker-pulse::after {
+  content: '';
+  @apply absolute inset-0 border-2 border-brand-purple rounded-full opacity-0;
+  animation: virtualPulse 3s ease-out infinite;
+}
+
+.virtual-marker-pulse::after {
+  animation-delay: 1.5s;
+}
+
+/* Premium Gym Marker */
+.premium-marker {
+  @apply w-14 h-14;
+  z-index: 2000 !important;
+}
+
+.premium-marker .marker-content {
+  @apply border-2 border-yellow-400;
+  background: linear-gradient(135deg, #2a2a2a, #3a3a3a) !important;
+}
+
+/* Network visualization */
+.network-layer {
+  @apply absolute inset-0 pointer-events-none opacity-0 transition-opacity duration-500;
+  z-index: 500 !important;
+}
+
+.network-layer.active {
+  @apply opacity-100;
+}
+
+.connection-line {
+  stroke: #9747FF;
+  stroke-width: 0.5;
+  fill: none;
+  opacity: 0.2;
+  stroke-dasharray: 5, 5;
+  animation: flowAnimation 3s linear infinite;
+  transition: opacity 0.2s ease, stroke-width 0.2s ease;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.participant-dot {
+  fill: #B9FF66;
+  transition: opacity 0.2s ease, r 0.2s ease, filter 0.3s ease;
+}
+
+.organizer-dot {
+  fill: #FFD700;
+  transition: opacity 0.2s ease, r 0.2s ease, filter 0.3s ease;
+}
+
+/* Mobile specific styles */
+@media (max-width: 767px) {
+  .toggle-button {
+    @apply min-w-[40px] h-10 p-0 flex-shrink-0;
+  }
+
+  .toggle-button.active {
+    @apply w-auto px-3;
+    min-width: fit-content !important;
+  }
+
+  .toggle-button.active .button-text {
+    @apply inline text-xs;
+  }
+}
